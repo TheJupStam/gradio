@@ -38,17 +38,18 @@
       .active {
         background-color: #28a745 !important; /* Green color for active button */
       }
-      iframe {
+      audio {
         margin-top: 20px;
-        border: none;
         width: 300px;
-        height: 80px;
+        height: 30px;
       }
     </style>
     <script>
       function playStream(stationUrl, button) {
-        // Change the iframe source to play the stream
-        document.getElementById("player").src = stationUrl;
+        // Change the audio source to play the stream
+        var audioPlayer = document.getElementById("audio-player");
+        audioPlayer.src = stationUrl;
+        audioPlayer.play(); // Automatically play the stream
 
         // Remove the active class from all buttons
         var buttons = document.querySelectorAll("button");
@@ -62,7 +63,7 @@
     </script>
   </head>
   <body>
-    <h1>Ραδιο</h1>
+    <h1>Favorite Radio Stations</h1>
 
     <ul>
       <li>
@@ -96,7 +97,10 @@
       </li>
     </ul>
 
-    <!-- Single iframe for all stations -->
-    <iframe id="player" src="" allow="autoplay"></iframe>
+    <!-- Single audio player for all stations -->
+    <audio id="audio-player" controls>
+      <source src="" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
   </body>
 </html>
