@@ -67,6 +67,54 @@
         margin-left: auto;
         margin-right: auto; /* Center align the weather widget */
       }
+      /* Toggle Switch styles */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 34px;
+      }
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+      input:checked + .slider {
+        background-color: #2196f3;
+      }
+      input:checked + .slider:before {
+        transform: translateX(26px);
+      }
+      /* Label positioning */
+      .toggle-label {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 10px;
+        color: #ffffff;
+        font-size: 18px;
+      }
       /* News section styles */
       .news-section {
         margin-top: 30px;
@@ -123,6 +171,54 @@
         button.classList.add("active");
       }
 
+      // Function to toggle between The Hague and Athens for the weather widget
+      function toggleWeather() {
+        var toggleSwitch = document.getElementById("weather-toggle");
+        var selectedCity = toggleSwitch.checked ? "athens" : "the-hague";
+        var cityLabel = document.getElementById("city-label");
+
+        // Update city label dynamically
+        cityLabel.innerText =
+          selectedCity === "athens" ? "Athens" : "The Hague";
+
+        // Remove the old weather widget
+        const weatherContainer = document.getElementById(
+          "weather-widget-container"
+        );
+        weatherContainer.innerHTML = "";
+
+        // Create a new widget with the selected city
+        var weatherWidget = document.createElement("a");
+        weatherWidget.classList.add("weatherwidget-io");
+        weatherWidget.setAttribute("data-theme", "gray");
+
+        if (selectedCity === "the-hague") {
+          // Set The Hague weather
+          weatherWidget.href = "https://forecast7.com/en/52d074d30/the-hague/";
+          weatherWidget.setAttribute("data-label_1", "THE HAGUE");
+          weatherWidget.setAttribute("data-label_2", "WEATHER");
+        } else if (selectedCity === "athens") {
+          // Set Athens weather
+          weatherWidget.href = "https://forecast7.com/en/37d9823d73/athens/";
+          weatherWidget.setAttribute("data-label_1", "ATHENS");
+          weatherWidget.setAttribute("data-label_2", "WEATHER");
+        }
+
+        // Add the new widget back to the container
+        weatherContainer.appendChild(weatherWidget);
+
+        // Remove the old weather widget script and add a new one
+        const oldScript = document.getElementById("weatherwidget-io-js");
+        if (oldScript) {
+          oldScript.remove(); // Remove the old script
+        }
+
+        var newScript = document.createElement("script");
+        newScript.src = "https://weatherwidget.io/js/widget.min.js";
+        newScript.id = "weatherwidget-io-js";
+        document.body.appendChild(newScript); // Append the new script to the body
+      }
+
       // Fetch and display top 5 news from the RSS feed
       async function loadRSSFeed() {
         const rssUrl = "https://www.skai.gr/feed.xml";
@@ -150,11 +246,13 @@
       // Load the RSS feed when the page loads
       window.onload = function () {
         loadRSSFeed();
+        toggleWeather(); // Ensure the correct weather is loaded on page load
       };
     </script>
   </head>
   <body>
-    <h1>Γκραδιο</h1>
+    <h1>Μια στα γρήγορα</h1>
+    <h2>Ράδιο</h2>
 
     <ul>
       <li>
@@ -212,31 +310,33 @@
       Your browser does not support the audio element.
     </audio>
 
-    <!-- Weather widget centered -->
-    <a
-      class="weatherwidget-io"
-      href="https://forecast7.com/en/52d074d30/the-hague/"
-      data-label_1="THE HAGUE"
-      data-label_2="WEATHER"
-      data-theme="gray"
-      >THE HAGUE WEATHER</a
-    >
-    <script>
-      !(function (d, s, id) {
-        var js,
-          fjs = d.getElementsByTagName(s)[0];
-        if (!d.getElementById(id)) {
-          js = d.createElement(s);
-          js.id = id;
-          js.src = "https://weatherwidget.io/js/widget.min.js";
-          fjs.parentNode.insertBefore(js, fjs);
-        }
-      })(document, "script", "weatherwidget-io-js");
-    </script>
+    <h2>Καιρός</h2>
+
+    <!-- Toggle Switch for Weather -->
+    <div class="switch-container">
+      <label class="switch">
+        <input type="checkbox" id="weather-toggle" onclick="toggleWeather()" />
+        <span class="slider"></span>
+      </label>
+      <span id="city-label" class="toggle-label">The Hague</span>
+      <!-- Dynamic Label -->
+    </div>
+
+    <!-- Weather widget container -->
+    <div id="weather-widget-container">
+      <a
+        class="weatherwidget-io"
+        href="https://forecast7.com/en/52d074d30/the-hague/"
+        data-label_1="THE HAGUE"
+        data-label_2="WEATHER"
+        data-theme="gray"
+        >THE HAGUE WEATHER</a
+      >
+    </div>
 
     <!-- News Section -->
     <div id="news" class="news-section">
-      <div class="news-title">Top 5 News</div>
+      <div class="news-title">Top 5 απο ΣΚΑΙ</div>
     </div>
   </body>
 </html>
