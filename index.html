@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Radio Stations</title>
+    <title>Gradio</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -48,6 +48,10 @@
         height: 30px;
         margin-right: 15px;
       }
+      /* Specific styling for Παραπολιτικά to make the icon smaller */
+      .parapolitika-logo {
+        height: 20px; /* Smaller logo for Παραπολιτικά */
+      }
       audio {
         margin-top: 20px;
         width: 300px;
@@ -75,7 +79,7 @@
     </script>
   </head>
   <body>
-    <h1>Favorite Radio Stations</h1>
+    <h1>Γκραδιο</h1>
 
     <ul>
       <li>
@@ -103,6 +107,7 @@
           onclick="playStream('https://netradio.live24.gr/athinaradio', this)"
         >
           <img
+            class="parapolitika-logo"
             src="https://s.parapolitika.gr/Content/ePublish/media/logo.svg"
             alt="Παραπολιτικα logo"
           />
