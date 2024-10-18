@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Radio Stations</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        text-align: center;
+        padding: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      li {
+        margin: 15px 0;
+      }
+      button {
+        display: inline-block;
+        background-color: #007bff;
+        color: white;
+        padding: 15px 25px;
+        text-align: center;
+        font-size: 18px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .active {
+        background-color: #28a745 !important; /* Green color for active button */
+      }
+      iframe {
+        margin-top: 20px;
+        border: none;
+        width: 300px;
+        height: 80px;
+      }
+    </style>
+    <script>
+      function playStream(stationUrl, button) {
+        // Change the iframe source to play the stream
+        document.getElementById("player").src = stationUrl;
+
+        // Remove the active class from all buttons
+        var buttons = document.querySelectorAll("button");
+        buttons.forEach(function (btn) {
+          btn.classList.remove("active");
+        });
+
+        // Add the active class to the clicked button
+        button.classList.add("active");
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Ραδιο</h1>
+
+    <ul>
+      <li>
+        <button onclick="playStream('https://skai.live24.gr/skai1003', this)">
+          ΣΚΑΙ
+        </button>
+      </li>
+      <li>
+        <button
+          onclick="playStream('https://sportfm.live24.gr/sportfm7712', this)"
+        >
+          Σπορ ΕφΕμ
+        </button>
+      </li>
+      <li>
+        <button
+          onclick="playStream('https://netradio.live24.gr/athinaradio', this)"
+        >
+          Παραπολιτικά
+        </button>
+      </li>
+      <li>
+        <button onclick="playStream('https://rdst.win:48051/', this)">
+          Νόστος
+        </button>
+      </li>
+      <li>
+        <button onclick="playStream('https://realfm.live24.gr/realfm', this)">
+          Ρεαλ ΕφΕμ
+        </button>
+      </li>
+    </ul>
+
+    <!-- Single iframe for all stations -->
+    <iframe id="player" src="" allow="autoplay"></iframe>
+  </body>
+</html>
