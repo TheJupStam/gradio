@@ -61,6 +61,11 @@
       /* Weather widget styles */
       .weatherwidget-io {
         margin-top: 20px;
+        width: 600px; /* Match the width of the news pane */
+        max-width: 100%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto; /* Center align the weather widget */
       }
       /* News section styles */
       .news-section {
@@ -80,7 +85,7 @@
       }
       .news-item {
         margin: 15px 0;
-        font-size: 16px; /* Smaller text size */
+        font-size: 16px;
         color: #cccccc;
         padding: 10px;
         background-color: #2b2b2b;
@@ -201,13 +206,7 @@
       </li>
     </ul>
 
-    <!-- Single audio player for all stations -->
-    <audio id="audio-player" controls>
-      <source src="" type="audio/mpeg" />
-      Your browser does not support the audio element.
-    </audio>
-
-    <!-- Weather widget embedded below the player -->
+    <!-- Weather widget centered -->
     <a
       class="weatherwidget-io"
       href="https://forecast7.com/en/52d074d30/the-hague/"
