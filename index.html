@@ -243,9 +243,34 @@
         }
       }
 
+      async function loadsportsRSSFeed() {
+        const rssUrl =
+          "https://www.sport24.gr/newsfeed.xml?profile=public&types=news&version=light&items=60";
+        try {
+          const response = await fetch(
+            `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(
+              rssUrl
+            )}`
+          );
+          const data = await response.json();
+          const items = data.items.slice(0, 5); // Get the top 5 items
+
+          const sportNewsSection = document.getElementById("sport-news");
+          items.forEach((item) => {
+            const newsItem = document.createElement("div");
+            newsItem.className = "news-item";
+            newsItem.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
+            sportNewsSection.appendChild(newsItem);
+          });
+        } catch (error) {
+          console.error("Error fetching RSS feed:", error);
+        }
+      }
+
       // Load the RSS feed when the page loads
       window.onload = function () {
         loadRSSFeed();
+        loadsportsRSSFeed();
         toggleWeather(); // Ensure the correct weather is loaded on page load
       };
     </script>
@@ -335,8 +360,12 @@
     </div>
 
     <!-- News Section -->
+    <h2>Τελευταία Νέα</h2>
     <div id="news" class="news-section">
-      <div class="news-title">Top 5 απο ΣΚΑΙ</div>
+      <div class="news-title">ΣΚΑΙ</div>
+    </div>
+    <div id="sport-news" class="news-section">
+      <div class="news-title">Sport24.gr</div>
     </div>
   </body>
 </html>
