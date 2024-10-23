@@ -154,6 +154,24 @@
         color: #bbbbbb;
       }
     </style>
+    <!-- Weather Widget Script -->
+    <script>
+      (function (d, s, id) {
+        if (d.getElementById(id)) {
+          if (window.__TOMORROW__) {
+            window.__TOMORROW__.renderWidget();
+          }
+          return;
+        }
+        const fjs = d.getElementsByTagName(s)[0];
+        const js = d.createElement(s);
+        js.id = id;
+        js.src = "https://www.tomorrow.io/v1/widget/sdk/sdk.bundle.min.js";
+
+        fjs.parentNode.insertBefore(js, fjs);
+      })(document, "script", "tomorrow-sdk");
+    </script>
+
     <script>
       function playStream(stationUrl, button) {
         // Change the audio source to play the stream
@@ -169,54 +187,6 @@
 
         // Add the active class to the clicked button
         button.classList.add("active");
-      }
-
-      // Function to toggle between The Hague and Athens for the weather widget
-      function toggleWeather() {
-        var toggleSwitch = document.getElementById("weather-toggle");
-        var selectedCity = toggleSwitch.checked ? "athens" : "the-hague";
-        var cityLabel = document.getElementById("city-label");
-
-        // Update city label dynamically
-        cityLabel.innerText =
-          selectedCity === "athens" ? "Athens" : "The Hague";
-
-        // Remove the old weather widget
-        const weatherContainer = document.getElementById(
-          "weather-widget-container"
-        );
-        weatherContainer.innerHTML = "";
-
-        // Create a new widget with the selected city
-        var weatherWidget = document.createElement("a");
-        weatherWidget.classList.add("weatherwidget-io");
-        weatherWidget.setAttribute("data-theme", "gray");
-
-        if (selectedCity === "the-hague") {
-          // Set The Hague weather
-          weatherWidget.href = "https://forecast7.com/en/52d074d30/the-hague/";
-          weatherWidget.setAttribute("data-label_1", "THE HAGUE");
-          weatherWidget.setAttribute("data-label_2", "WEATHER");
-        } else if (selectedCity === "athens") {
-          // Set Athens weather
-          weatherWidget.href = "https://forecast7.com/en/37d9823d73/athens/";
-          weatherWidget.setAttribute("data-label_1", "ATHENS");
-          weatherWidget.setAttribute("data-label_2", "WEATHER");
-        }
-
-        // Add the new widget back to the container
-        weatherContainer.appendChild(weatherWidget);
-
-        // Remove the old weather widget script and add a new one
-        const oldScript = document.getElementById("weatherwidget-io-js");
-        if (oldScript) {
-          oldScript.remove(); // Remove the old script
-        }
-
-        var newScript = document.createElement("script");
-        newScript.src = "https://weatherwidget.io/js/widget.min.js";
-        newScript.id = "weatherwidget-io-js";
-        document.body.appendChild(newScript); // Append the new script to the body
       }
 
       // Fetch and display top 5 news from the RSS feed
@@ -296,7 +266,7 @@
         loadRSSFeed();
         loadsportsRSSFeed();
         loadsuperleagueRSSFeed();
-        toggleWeather(); // Ensure the correct weather is loaded on page load
+        //toggleWeather(); // Ensure the correct weather is loaded on page load
       };
     </script>
   </head>
@@ -362,28 +332,36 @@
 
     <h2>Καιρός</h2>
 
-    <!-- Toggle Switch for Weather -->
-    <div class="switch-container">
-      <label class="switch">
-        <input type="checkbox" id="weather-toggle" onclick="toggleWeather()" />
-        <span class="slider"></span>
-      </label>
-      <span id="city-label" class="toggle-label">The Hague</span>
-      <!-- Dynamic Label -->
-    </div>
-
-    <!-- Weather widget container -->
-    <div id="weather-widget-container">
+    <!-- Weather widget that detects user's location -->
+    <!-- Tomorrow.io Weather Widget -->
+    <div
+      class="tomorrow"
+      data-location-id=""
+      data-language="EN"
+      data-unit-system="METRIC"
+      data-skin="light"
+      data-widget-type="upcoming"
+      style="padding-bottom: 22px; position: relative"
+    >
       <a
-        class="weatherwidget-io"
-        href="https://forecast7.com/en/52d074d30/the-hague/"
-        data-label_1="THE HAGUE"
-        data-label_2="WEATHER"
-        data-theme="gray"
-        >THE HAGUE WEATHER</a
+        href="https://www.tomorrow.io/weather-api/"
+        rel="nofollow noopener noreferrer"
+        target="_blank"
+        style="
+          position: absolute;
+          bottom: 0;
+          transform: translateX(-50%);
+          left: 50%;
+        "
       >
+        <img
+          alt="Powered by the Tomorrow.io Weather API"
+          src="https://weather-website-client.tomorrow.io/img/powered-by.svg"
+          width="250"
+          height="18"
+        />
+      </a>
     </div>
-
     <!-- News Section -->
     <h2>Τελευταία Νέα</h2>
     <div id="news" class="news-section">
