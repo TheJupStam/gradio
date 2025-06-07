@@ -213,30 +213,6 @@
         }
       }
 
-      async function loadsportsRSSFeed() {
-        const rssUrl =
-          "https://www.sport24.gr/newsfeed.xml?profile=public&types=news&version=light&items=60";
-        try {
-          const response = await fetch(
-            `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(
-              rssUrl
-            )}`
-          );
-          const data = await response.json();
-          const items = data.items.slice(0, 5); // Get the top 5 items
-
-          const sportNewsSection = document.getElementById("sport-news");
-          items.forEach((item) => {
-            const newsItem = document.createElement("div");
-            newsItem.className = "news-item";
-            newsItem.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
-            sportNewsSection.appendChild(newsItem);
-          });
-        } catch (error) {
-          console.error("Error fetching RSS feed:", error);
-        }
-      }
-
       async function loadsuperleagueRSSFeed() {
         const rssUrl = "https://www.gazzetta.gr/football/superleague/rss";
         try {
@@ -264,7 +240,6 @@
       // Load the RSS feed when the page loads
       window.onload = function () {
         loadRSSFeed();
-        loadsportsRSSFeed();
         loadsuperleagueRSSFeed();
         //toggleWeather(); // Ensure the correct weather is loaded on page load
       };
@@ -369,9 +344,6 @@
     </div>
     <div id="superleague-news" class="news-section">
       <div class="news-title">Gazzetta.gr Superleague</div>
-    </div>
-    <div id="sport-news" class="news-section">
-      <div class="news-title">Sport24.gr</div>
     </div>
   </body>
 </html>
