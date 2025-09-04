@@ -186,7 +186,8 @@
         el.textContent = message || '';
         el.style.color = isError ? '#ff6b6b' : '#ffcc00';
       }
-      function playStream(stationUrl, button) {
+      // Ensure global binding for inline onclick handlers
+      window.playStream = function (stationUrl, button) {
         // Change the audio source to play the stream
         var audioPlayer = document.getElementById("audio-player");
         setStatus('');
@@ -202,7 +203,8 @@
         }
 
         // If the page is HTTPS and the URL is HTTP, browsers will block it (mixed content)
-        if (location.protocol === 'https:' && /^http:\\/\//i.test(stationUrl)) {
+        var isHttp = stationUrl.toLowerCase().startsWith('http://');
+        if (location.protocol === 'https:' && isHttp) {
           setStatus('Stream is HTTP and will be blocked on HTTPS site. Trying HTTPS fallback…');
           stationUrl = stationUrl.replace(/^http:/i, 'https:');
         }
