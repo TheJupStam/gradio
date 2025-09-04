@@ -172,12 +172,53 @@
       })(document, "script", "tomorrow-sdk");
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
       function playStream(stationUrl, button) {
         // Change the audio source to play the stream
         var audioPlayer = document.getElementById("audio-player");
-        audioPlayer.src = stationUrl;
-        audioPlayer.play(); // Automatically play the stream
+
+        // Clean up any previous HLS instance
+        if (window.__HLS__) {
+          try {
+            window.__HLS__.destroy();
+          } catch (e) {
+            console.warn("Error destroying previous HLS instance", e);
+          }
+          window.__HLS__ = null;
+        }
+
+        const isHls = /\.m3u8(\?|$)/i.test(stationUrl);
+
+        if (isHls) {
+          // Native HLS (Safari, some mobile browsers)
+          if (audioPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+            audioPlayer.src = stationUrl;
+            audioPlayer.play().catch(() => {});
+          } else if (window.Hls && window.Hls.isSupported()) {
+            // Use hls.js for browsers without native HLS (Chrome, Firefox, Edge)
+            const hls = new Hls({ enableWorker: true });
+            window.__HLS__ = hls;
+            hls.attachMedia(audioPlayer);
+            hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+              hls.loadSource(stationUrl);
+            });
+            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+              audioPlayer.play().catch(() => {});
+            });
+            hls.on(Hls.Events.ERROR, function (event, data) {
+              console.error('HLS.js error:', data);
+            });
+          } else {
+            // Last-resort attempt
+            audioPlayer.src = stationUrl;
+            audioPlayer.play().catch(() => {});
+          }
+        } else {
+          // Regular MP3/AAC stream
+          audioPlayer.src = stationUrl;
+          audioPlayer.play().catch(() => {});
+        }
 
         // Remove the active class from all buttons
         var buttons = document.querySelectorAll("button");
@@ -296,11 +337,19 @@
           Ρεαλ ΕφΕμ
         </button>
       </li>
+      <li>
+        <button onclick="playStream('http://lsn.lv/bbcradio.m3u8?station=bbc_6music&bitrate=96000', this)">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Logo_BBC_6_Music.svg"
+            alt="BBC Radio 6 Music"
+          />
+          BBC Radio 6 Music
+        </button>
+      </li>
     </ul>
 
     <!-- Single audio player for all stations -->
-    <audio id="audio-player" controls>
-      <source src="" type="audio/mpeg" />
+    <audio id="audio-player" controls crossorigin="anonymous">
       Your browser does not support the audio element.
     </audio>
 
