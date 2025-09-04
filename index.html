@@ -180,6 +180,31 @@
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
+      // Optional: set this to your HTTPS proxy base to enable CORS-safe HLS on Pages
+      // Example: 'https://your-worker.workers.dev/hls'
+      window.STREAM_PROXY_BASE = window.STREAM_PROXY_BASE || null;
+      (function initProxyBaseFromQuery() {
+        try {
+          const usp = new URLSearchParams(location.search);
+          const qb = usp.get('proxy');
+          if (qb) window.STREAM_PROXY_BASE = qb;
+        } catch (e) {}
+      })();
+
+      function toProxyUrl(originalUrl) {
+        if (!window.STREAM_PROXY_BASE) return originalUrl;
+        try {
+          const u = new URL(originalUrl);
+          const scheme = u.protocol.replace(':', '');
+          return `${window.STREAM_PROXY_BASE}/${scheme}/${u.host}${u.pathname}${u.search}`;
+        } catch (e) {
+          return originalUrl;
+        }
+      }
+
+      function isProxied(url) {
+        return !!(window.STREAM_PROXY_BASE && typeof url === 'string' && url.startsWith(window.STREAM_PROXY_BASE));
+      }
       function setStatus(message, isError) {
         const el = document.getElementById('player-status');
         if (!el) return;
@@ -209,6 +234,12 @@
           stationUrl = stationUrl.replace(/^http:/i, 'https:');
         }
 
+        // If we are on HTTPS and a proxy base is configured, prefer proxy to avoid CORS/mixed content
+        if (location.protocol === 'https:' && window.STREAM_PROXY_BASE && !isProxied(stationUrl)) {
+          stationUrl = toProxyUrl(stationUrl);
+          setStatus('Using proxy to avoid mixed content/CORS issues.');
+        }
+
         const isHls = /\.m3u8(\?|$)/i.test(stationUrl);
 
         if (isHls) {
@@ -230,7 +261,15 @@
             hls.on(Hls.Events.ERROR, function (event, data) {
               console.error('HLS.js error:', data);
               if (data && data.fatal) {
-                setStatus('HLS fatal error: ' + (data.details || 'unknown') + '. If this is a BBC stream over HTTP, use an HTTPS-capable URL or proxy.', true);
+                // If we have a proxy available and haven't tried it yet, retry via proxy
+                if (window.STREAM_PROXY_BASE && !isProxied(stationUrl)) {
+                  try { hls.destroy(); } catch (e) {}
+                  const proxied = toProxyUrl(stationUrl);
+                  setStatus('HLS fatal error: ' + (data.details || 'unknown') + '. Retrying via proxy…', true);
+                  // Re-run with proxied URL
+                  return window.playStream(proxied, button);
+                }
+                setStatus('HLS fatal error: ' + (data.details || 'unknown') + '. Use an HTTPS-capable URL or proxy.', true);
               }
             });
           } else {
