@@ -58,6 +58,12 @@
         background-color: #333333; /* Dark background for the audio player */
         color: #ffffff; /* White text for controls */
       }
+      .status {
+        margin: 10px auto 0;
+        max-width: 600px;
+        color: #ffcc00;
+        font-size: 14px;
+      }
       /* Weather widget styles */
       .weatherwidget-io {
         margin-top: 20px;
@@ -174,9 +180,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
+      function setStatus(message, isError) {
+        const el = document.getElementById('player-status');
+        if (!el) return;
+        el.textContent = message || '';
+        el.style.color = isError ? '#ff6b6b' : '#ffcc00';
+      }
       function playStream(stationUrl, button) {
         // Change the audio source to play the stream
         var audioPlayer = document.getElementById("audio-player");
+        setStatus('');
 
         // Clean up any previous HLS instance
         if (window.__HLS__) {
@@ -186,6 +199,12 @@
             console.warn("Error destroying previous HLS instance", e);
           }
           window.__HLS__ = null;
+        }
+
+        // If the page is HTTPS and the URL is HTTP, browsers will block it (mixed content)
+        if (location.protocol === 'https:' && /^http:\\/\//i.test(stationUrl)) {
+          setStatus('Stream is HTTP and will be blocked on HTTPS site. Trying HTTPS fallback…');
+          stationUrl = stationUrl.replace(/^http:/i, 'https:');
         }
 
         const isHls = /\.m3u8(\?|$)/i.test(stationUrl);
@@ -208,6 +227,9 @@
             });
             hls.on(Hls.Events.ERROR, function (event, data) {
               console.error('HLS.js error:', data);
+              if (data && data.fatal) {
+                setStatus('HLS fatal error: ' + (data.details || 'unknown') + '. If this is a BBC stream over HTTP, use an HTTPS-capable URL or proxy.', true);
+              }
             });
           } else {
             // Last-resort attempt
@@ -338,7 +360,7 @@
         </button>
       </li>
       <li>
-        <button onclick="playStream('http://lsn.lv/bbcradio.m3u8?station=bbc_6music&bitrate=96000', this)">
+        <button onclick="playStream('https://lsn.lv/bbcradio.m3u8?station=bbc_6music&bitrate=96000', this)">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Logo_BBC_6_Music.svg"
             alt="BBC Radio 6 Music"
@@ -352,6 +374,7 @@
     <audio id="audio-player" controls crossorigin="anonymous">
       Your browser does not support the audio element.
     </audio>
+    <div id="player-status" class="status"></div>
 
     <h2>Καιρός</h2>
 
